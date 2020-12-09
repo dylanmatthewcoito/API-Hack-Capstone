@@ -1,31 +1,26 @@
 'use strict';
 
 
-
-function generateArtistsListItem(artistsItem) {
+function generateArtistsListItem(item) {
     console.log("generateArtistsListItem() ran");
     
-    const artistsName = artistsItem[1].fullName;
-  
     return `
     <li>
-      <h3>${artistsName}</h3>
+      <h3>${item.name}</h3>
     </li>`
   }
 
 
-
-function generateArtistsListString(artistsJSON) {
-    const artistsListString = Object.entries(artistsJSON.data)
-      .map(artistsItem => generateArtistsListItem(artistsItem));
+function generateArtistsListString(responseJSON) {
+    const events = responseJSON._embedded.events;
+    const artistsListString = events.map(event => generateArtistsListItem(event));
   
     return artistsListString.join('');
   }
 
 
-
 function displayArtists(artistsJSON) {
-    console.log(responseJSON);
+    console.log(artistsJSON);
     $('#results-list').empty();
     
     const statesSelected = $('#js-search-state').val()
@@ -35,13 +30,12 @@ function displayArtists(artistsJSON) {
     $('#js-city-names').text(citySelected.toUpperCase());
   
     const artistsList = generateArtistsListString(artistsJSON);
-    $('#js-artists-list').append(artistsList);
+    $('#results-list').html(artistsList);
 
 
     $('#results').removeClass('hidden');
   }
 
-  
 
 function formatQueryParameters(params) {;
     const queryItems = Object.keys(params)
@@ -49,12 +43,13 @@ function formatQueryParameters(params) {;
     return queryItems.join('&');
   }
 
+const apiKey = 'M8Qs44pmUP412bWt4G6lSsggwpHoPUcA';
 
 function getArtists(searchState, searchCity, searchRadius) {
-    const apiKey = 'M8Qs44pmUP412bWt4G6lSsggwpHoPUcA';
-    const endpointURL = 'https://app.ticketmaster.com/discovery/v2/events';
+    
+    const endpointURL = 'https://cors-anywhere.herokuapp.com/https://app.ticketmaster.com/discovery/v2/events';
     const params = {
-        api_key : apiKey,
+        apikey : apiKey,
         stateCode: searchState,
         city: searchCity,
         radius: searchRadius
@@ -65,8 +60,11 @@ function getArtists(searchState, searchCity, searchRadius) {
 
         console.log(queryString);
 
+        fetchEvents(url).then(
+          events => console.log(events)
+        )
 
-        fetch(url)
+       fetch(url)
         .then(
         response => {
         if (response.ok) {
@@ -80,10 +78,27 @@ function getArtists(searchState, searchCity, searchRadius) {
         .catch(
         error => {
             alert("fetch response failed")
+            console.log(error);
             $('#results').addClass('hidden');
             $('#js-error-message').text(`${error.message}`);
         }
         );
+}
+
+
+async function fetchEvents(url) {
+  const response = await fetch(url).then(r => r.json());
+  const events = response._embedded.events;
+
+  const details = await Promise.all(
+    events.map(
+      e => fetch(`https://cors-anywhere.herokuapp.com/https://app.ticketmaster.com/discovery/v2/events/${e.id}?apikey=${apiKey}`)
+            .then(r => r.json()
+      )
+    )
+  );
+
+  return events.map((e, i) => ({...e, details: details[i]}));
 }
 
 
@@ -92,9 +107,9 @@ function getArtists(searchState, searchCity, searchRadius) {
 function watchForm() {
     $('form').submit(event => {
         event.preventDefault();
-        const searchState = $('js-search-state').val();
-        const searchCity = $('js-search-city').val();
-        const searchRadius = $('js-search-radius').val();
+        const searchState = $('#js-search-state').val();
+        const searchCity = $('#js-search-city').val();
+        const searchRadius = $('#js-search-radius').val();
         getArtists(searchState, searchCity, searchRadius);
     });
 }
