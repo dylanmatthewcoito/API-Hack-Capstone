@@ -8,12 +8,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>API Hack Capstone</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,500&display=swap" rel="stylesheet">
   </head>
 
 
   <body>
 
-        <header>
+        <header class="center">
             <h1>Pre-Concert Playlist Generator</h1>
             <h2>Find the artists that are playing near you and listen before the show</h2>
         </header>
@@ -26,17 +28,14 @@
               <input type="text" name="search-term" id="js-search-city" required><br><br>
 
               <label for="js-search-term">State Search</label>
-              <input type="text" name="search-term" id="js-search-state" placeholder="example: CA, TX, AZ " required><br><br>
+              <input type="text" name="search-term" id="js-search-state" placeholder="ex: CA, TX, AZ " required><br><br>
   
-              <label for="js-search-radius">Radius Search</label>
+              <label for="js-search-radius">Radius Search in Miles</label>
               <input type="number" name="search-results-limit" id="js-search-radius" 
               min="50" step="10" value="100" max="150" required><br><br>
-
-              <label for="quantity">Number of Results:</label>
-              <input type="number" id="quantity" name="quantity" min="1" max="50" value="15" required><br><br>
             
   
-              <input type="submit" value="Find Artists">
+              <input class="button" type="submit" value="Find Artists">
           </form>
   
           <p id="js-error-message" class="error-message"></p>
