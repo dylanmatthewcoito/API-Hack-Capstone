@@ -11,12 +11,14 @@ function generateArtistsListItem(item) {
   }
 
 
+
 function generateArtistsListString(responseJSON) {
     const events = responseJSON._embedded.events;
     const artistsListString = events.map(event => generateArtistsListItem(event));
   
     return artistsListString.join('');
   }
+
 
 
 function displayArtists(artistsJSON) {
@@ -36,6 +38,7 @@ function displayArtists(artistsJSON) {
     $('#results').removeClass('hidden');
   }
 
+  
 
 function formatQueryParameters(params) {;
     const queryItems = Object.keys(params)
@@ -85,7 +88,6 @@ function getArtists(searchState, searchCity, searchRadius) {
         );
 }
 
-
 async function fetchEvents(url) {
   const response = await fetch(url).then(r => r.json());
   const events = response._embedded.events;
@@ -116,3 +118,4 @@ function watchForm() {
 
 
 $(watchForm);
+
